@@ -3,7 +3,7 @@ import {
   TGuardian,
   TLocalGuardian,
   IStudent,
-  StudentMethods,
+  // StudentMethods,
   StudentModel,
   TUserName,
 } from './student.interface';
@@ -60,6 +60,12 @@ const studentSchema = new Schema<IStudent, StudentModel>(
       required: [true, 'Password is required'],
       maxlength: [20, 'Password can not be more than 20 characters'],
     },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'user id is required'],
+      unique: true,
+      ref: 'User',
+    },
     name: {
       type: userNameSchema,
       required: true,
@@ -99,11 +105,6 @@ const studentSchema = new Schema<IStudent, StudentModel>(
       required: true,
     },
     profileImg: { type: String },
-    isActive: {
-      type: String,
-      enum: ['active', 'block'],
-      default: 'active',
-    },
     isDeleted: {
       type: Boolean,
       default: false,
