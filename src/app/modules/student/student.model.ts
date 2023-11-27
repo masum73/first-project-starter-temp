@@ -7,8 +7,6 @@ import {
   StudentModel,
   TUserName,
 } from './student.interface';
-import bcrypt from 'bcrypt';
-import config from '../../config';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -55,11 +53,7 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 const studentSchema = new Schema<IStudent, StudentModel>(
   {
     id: { type: String, required: true, unique: true },
-    password: {
-      type: String,
-      required: [true, 'Password is required'],
-      maxlength: [20, 'Password can not be more than 20 characters'],
-    },
+
     user: {
       type: Schema.Types.ObjectId,
       required: [true, 'user id is required'],
@@ -122,26 +116,6 @@ studentSchema.virtual('fullName').get(function () {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
 
-// pre save middleware / hook : will work on create() and save()
-studentSchema.pre('save', async function (next) {
-  // console.log(this, 'pre hook : we will save the data');
-
-  // hashing password and saving to db
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const student = this; //doc
-  student.password = await bcrypt.hash(
-    student.password,
-    Number(config.bcrypt_salt_rounds),
-  );
-  next();
-});
-
-// post save middleware / hook
-studentSchema.post('save', function (doc, next) {
-  doc.password = '';
-  next();
-});
-
 // query middleware / hook
 studentSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } });
@@ -153,11 +127,11 @@ studentSchema.pre('findOne', function (next) {
 
   next();
 });
-studentSchema.pre('aggregate', function (next) {
-  // this.find({ isDeleted: { $ne: true } });
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
-  next();
-});
+// studentSchema.pre('aggregate', function (next) {
+//   // this.find({ isDeleted: { $ne: true } });
+//   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+//   next();
+// });
 
 // creating a custom static method
 studentSchema.statics.isStudentExists = async function (id: string) {
