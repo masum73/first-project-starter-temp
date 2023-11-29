@@ -1,58 +1,19 @@
-import { NextFunction, Request, Response } from 'express';
 import { UserServices } from './user.service';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
+import catchAsync from '../../utils/catchAsync';
 
-const createStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    // create a schema validation using zod
+const createStudent = catchAsync(async (req, res) => {
+  const { password, student: studentData } = req.body;
 
-    const { password, student: studentData } = req.body;
-    // data validation using Joi
-    // const { error, value } = studentValidationSchema.validate(studentData);
+  const result = await UserServices.createStudentIntoDB(password, studentData);
 
-    // data validation using zod
-    // const zodParsedData = studentValidationSchema.parse(studentData);
-
-    // will call service function to send this data
-
-    const result = await UserServices.createStudentIntoDB(
-      password,
-      studentData,
-    );
-
-    // if (error) {
-    //   res.status(500).json({
-    //     success: false,
-    //     message: 'Something went wrong',
-    //     error: error.details,
-    //   });
-    // }
-
-    // send response
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'Student is created successfully',
-    //   data: result,
-    // });
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Student is created successfully',
-      data: result,
-    });
-  } catch (error) {
-    // res.status(500).json({
-    //   success: false,
-    //   message: error.message || 'Something went wrong',
-    //   error: error,
-    // });
-    next(error);
-  }
-};
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Student is created successfully',
+    data: result,
+  });
+});
 
 export const UserControllers = { createStudent };

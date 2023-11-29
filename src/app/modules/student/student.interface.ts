@@ -30,7 +30,7 @@ export interface IStudent {
   name: TUserName;
   gender: 'male' | 'female';
   email: string;
-  dateOfBirth?: string;
+  dateOfBirth?: Date;
   contactNo: string;
   emergencyContactNo: string;
   bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
@@ -39,6 +39,7 @@ export interface IStudent {
   guardian: TGuardian;
   localGuardian: TLocalGuardian;
   profileImg?: string;
+  admissionSemester: Types.ObjectId;
   isDeleted: boolean;
 }
 // for creating static

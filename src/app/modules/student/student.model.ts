@@ -81,7 +81,7 @@ const studentSchema = new Schema<IStudent, StudentModel>(
       //   message: '{VALUE} is not valid',
       // },
     },
-    dateOfBirth: { type: String },
+    dateOfBirth: { type: Date },
     contactNo: { type: String, required: true },
     emergencyContactNo: { type: String, required: true },
     bloodGroup: {
@@ -99,6 +99,10 @@ const studentSchema = new Schema<IStudent, StudentModel>(
       required: true,
     },
     profileImg: { type: String },
+    admissionSemester: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicSemester',
+    },
     isDeleted: {
       type: Boolean,
       default: false,

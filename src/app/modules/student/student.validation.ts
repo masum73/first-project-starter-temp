@@ -23,23 +23,27 @@ const localGuardianValidationSchema = z.object({
   address: z.string(),
 });
 
-const studentValidationSchema = z.object({
-  id: z.string(),
-  password: z.string().max(20),
-  name: userNameValidationSchema,
-  gender: z.enum(['male', 'female']),
-  email: z.string().email(),
-  dateOfBirth: z.string(),
-  contactNo: z.string(),
-  emergencyContactNo: z.string(),
-  bloodGroup: z.enum(['A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-']),
-  permanentAddress: z.string(),
-  presentAddress: z.string(),
-  guardian: guardianValidationSchema,
-  localGuardian: localGuardianValidationSchema,
-  profileImg: z.string(),
-  isActive: z.enum(['active', 'block']).default('active'),
-  isDeleted: z.boolean(),
+export const createStudentValidationSchema = z.object({
+  body: z.object({
+    password: z.string().max(20),
+    student: z.object({
+      name: userNameValidationSchema,
+      gender: z.enum(['male', 'female']),
+      email: z.string().email(),
+      dateOfBirth: z.string().optional(),
+      contactNo: z.string(),
+      emergencyContactNo: z.string(),
+      bloodGroup: z.enum(['A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-']),
+      permanentAddress: z.string(),
+      presentAddress: z.string(),
+      guardian: guardianValidationSchema,
+      localGuardian: localGuardianValidationSchema,
+      admissionSemester: z.string(),
+      profileImg: z.string(),
+    }),
+  }),
 });
 
-export default studentValidationSchema;
+export const studentValidations = {
+  createStudentValidationSchema,
+};
