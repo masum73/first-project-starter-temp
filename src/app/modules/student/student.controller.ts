@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from 'express';
 import { StudentServices } from './student.service';
+import sendResponse from '../../utils/sendResponse';
+import httpStatus from 'http-status';
 // import studentValidationSchema from './student.validation';
 // import studentValidationSchema from './student.validation';
 // import { z } from 'zod';
@@ -50,7 +52,13 @@ const getAllStudents = async (
 ) => {
   try {
     const result = await StudentServices.getAllStudentsFromDB();
-    res.status(200).json({
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'Students are retrieved successfully',
+    //   data: result,
+    // });
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
       message: 'Students are retrieved successfully',
       data: result,
@@ -73,7 +81,13 @@ const getSingleStudent = async (
   try {
     const studentId = req.params.studentId;
     const result = await StudentServices.getSingleStudentFromDB(studentId);
-    res.status(200).json({
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'Single Student is retrieved successfully',
+    //   data: result,
+    // });
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
       message: 'Single Student is retrieved successfully',
       data: result,
@@ -96,7 +110,13 @@ const deleteStudent = async (
   try {
     const studentId = req.params.studentId;
     const result = await StudentServices.deleteStudentFromDB(studentId);
-    res.status(200).json({
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'Student is deleted successfully',
+    //   data: result,
+    // });
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
       message: 'Student is deleted successfully',
       data: result,
