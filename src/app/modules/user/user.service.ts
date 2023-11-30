@@ -25,7 +25,9 @@ const createStudentIntoDB = async (password: string, payload: IStudent) => {
   const admissionSemester = await AcademicSemester.findById(
     payload.admissionSemester,
   );
-
+  if (!admissionSemester) {
+    throw new Error('semester not found');
+  }
   // manually set generated id
   // userData.id = '2030100001';
   userData.id = await generateStudentId(admissionSemester);
