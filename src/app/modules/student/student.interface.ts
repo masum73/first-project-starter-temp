@@ -40,6 +40,7 @@ export interface IStudent {
   localGuardian: TLocalGuardian;
   profileImg?: string;
   admissionSemester: Types.ObjectId;
+  academicDepartment: Types.ObjectId;
   isDeleted: boolean;
 }
 // for creating static
