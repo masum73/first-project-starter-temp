@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from 'mongoose';
 import config from '../../config';
@@ -17,8 +18,13 @@ import { TFaculty } from '../faculty/faculty.interface';
 import { Faculty } from '../faculty/faculty.model';
 import { Admin } from '../admin/admin.model';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
-const createStudentIntoDB = async (password: string, payload: IStudent) => {
+const createStudentIntoDB = async (
+  file: any,
+  password: string,
+  payload: IStudent,
+) => {
   // create a user object
   const userData: Partial<IUser> = {};
 
@@ -32,6 +38,8 @@ const createStudentIntoDB = async (password: string, payload: IStudent) => {
 
   // set student role
   userData.role = 'student';
+  // set student email
+  userData.email = payload.email;
 
   // find academic semester info
   const admissionSemester = await AcademicSemester.findById(
@@ -52,6 +60,11 @@ const createStudentIntoDB = async (password: string, payload: IStudent) => {
     // userData.id = '2030100001';
     userData.id = await generateStudentId(admissionSemester);
 
+    const imageName = `${userData.id}${payload?.name?.firstName}`;
+    const path = file?.path;
+    //send image to cloudinary
+    const { secure_url } = await sendImageToCloudinary(imageName, path);
+
     //create a user (transaction -1 )
     const newUser = await User.create([userData], { session }); // built in static method
     // console.log(newUser);
@@ -63,6 +76,7 @@ const createStudentIntoDB = async (password: string, payload: IStudent) => {
     // set id, _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; //reference_id
+    payload.profileImg = secure_url;
     // create a student (2nd transaction)
     const newStudent = await Student.create([payload], { session });
     if (!newStudent.length) {
@@ -88,6 +102,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
 
   //set student role
   userData.role = 'faculty';
+  userData.email = payload.email; //set faculty email
 
   // find academic department info
   const academicDepartment = await AcademicDepartment.findById(
@@ -144,6 +159,7 @@ const createAdminIntoDB = async (password: string, payload: TFaculty) => {
 
   //set student role
   userData.role = 'admin';
+  userData.email = payload.email; //set admin email
 
   const session = await mongoose.startSession();
 
@@ -181,8 +197,36 @@ const createAdminIntoDB = async (password: string, payload: TFaculty) => {
   }
 };
 
+const getMe = async (userId: string, role: string) => {
+  // const decoded = verifyToken(token, config.jwt_access_secret as string);
+  // const { userId, role } = decoded;
+
+  let result = null;
+  if (role === 'student') {
+    result = await Student.findOne({ id: userId }).populate('user');
+  }
+  if (role === 'admin') {
+    result = await Admin.findOne({ id: userId }).populate('user');
+  }
+
+  if (role === 'faculty') {
+    result = await Faculty.findOne({ id: userId }).populate('user');
+  }
+
+  return result;
+};
+
+const changeStatus = async (id: string, payload: { status: string }) => {
+  const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+  });
+  return result;
+};
+
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
+  getMe,
+  changeStatus,
 };
